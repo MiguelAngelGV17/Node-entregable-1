@@ -1,4 +1,5 @@
 const Repair = require("../models/repair.model");
+const catchAsync = require("../utils/catchAsync");
 
 // Método GET global
 exports.findAll = async (req, res) => {
@@ -46,10 +47,10 @@ exports.create = async (req, res) => {
 };
 
 // Método PATCH
-exports.update = async (req, res) => {
+exports.update = catchAsync(async (req, res) => {
   const { repair } = req;
 
-  const { id, date, status, userID } = req.body;
+  // const { status } = req.body;
 
   await repair.update({
     status: "completed",
@@ -59,7 +60,7 @@ exports.update = async (req, res) => {
     status: "success",
     message: "Repair information has been updated successfully",
   });
-};
+});
 
 // Método DELETE
 exports.delete = async (req, res) => {

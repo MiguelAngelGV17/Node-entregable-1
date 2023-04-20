@@ -1,4 +1,5 @@
 const User = require("../models/user.model");
+const catchAsync = require("../utils/catchAsync");
 
 // Método GET global
 exports.findAll = async (req, res) => {
@@ -27,28 +28,8 @@ exports.findOne = async (req, res) => {
   });
 };
 
-// Método POST
-exports.create = async (req, res) => {
-  const { id, name, email, password, role, status } = req.body;
-
-  const user = await User.create({
-    id: id,
-    name: name,
-    email: email,
-    password: password,
-    role: role,
-    status: status,
-  });
-
-  res.status(201).json({
-    status: "success",
-    message: "User created successfully",
-    user,
-  });
-};
-
 // Método PATCH
-exports.update = async (req, res) => {
+exports.update = catchAsync(async (req, res) => {
   const { user } = req;
   const { name, email } = req.body;
 
@@ -61,7 +42,7 @@ exports.update = async (req, res) => {
     status: "success",
     message: "User information has been updated  successfully",
   });
-};
+});
 
 // Método DELETE
 exports.delete = async (req, res) => {

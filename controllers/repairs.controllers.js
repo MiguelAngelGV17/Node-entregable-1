@@ -1,12 +1,22 @@
 const Repair = require("../models/repair.model");
+const User = require("../models/user.model");
 const catchAsync = require("../utils/catchAsync");
 
 // Método GET global
-exports.findAll = async (req, res) => {
+exports.findAllPending = catchAsync(async (req, res) => {
   const repairs = await Repair.findAll({
     where: {
       status: "pending",
     },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
+    include: [
+      {
+        model: User,
+        attributes: {
+          exclude: ["id", "password", "status", "createdAt", "updatedAt"],
+        },
+      },
+    ],
   });
 
   res.status(200).json({
@@ -15,10 +25,33 @@ exports.findAll = async (req, res) => {
     result: repairs.length,
     repairs,
   });
-};
+});
+exports.findAllCompleted = catchAsync(async (req, res) => {
+  const repairs = await Repair.findAll({
+    where: {
+      status: "completed",
+    },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
+    include: [
+      {
+        model: User,
+        attributes: {
+          exclude: ["id", "password", "status", "createdAt", "updatedAt"],
+        },
+      },
+    ],
+  });
+
+  res.status(200).json({
+    status: "success",
+    message: "The query has been done successfully",
+    result: repairs.length,
+    repairs,
+  });
+});
 
 // Método GET individual/específico
-exports.findOne = async (req, res) => {
+exports.findOne = catchAsync(async (req, res) => {
   const { repair } = req;
 
   res.status(200).json({
@@ -26,17 +59,19 @@ exports.findOne = async (req, res) => {
     message: "The query has been done successfully",
     repair,
   });
-};
+});
 
 // Método POST
-exports.create = async (req, res) => {
-  const { id, date, status, userID } = req.body;
+exports.create = catchAsync(async (req, res) => {
+  const { date, motorsNumber, description } = req.body;
+
+  const { sessionUser } = req;
 
   const repair = await Repair.create({
-    id,
     date,
-    status,
-    userID,
+    motorsNumber,
+    description,
+    userID: sessionUser.id,
   });
 
   res.status(201).json({
@@ -44,13 +79,11 @@ exports.create = async (req, res) => {
     message: "Repair information created successfully",
     repair,
   });
-};
+});
 
 // Método PATCH
 exports.update = catchAsync(async (req, res) => {
   const { repair } = req;
-
-  // const { status } = req.body;
 
   await repair.update({
     status: "completed",
@@ -63,7 +96,7 @@ exports.update = catchAsync(async (req, res) => {
 });
 
 // Método DELETE
-exports.delete = async (req, res) => {
+exports.delete = catchAsync(async (req, res) => {
   const { repair } = req;
 
   await repair.update({ status: "canceled" });
@@ -71,4 +104,4 @@ exports.delete = async (req, res) => {
   res.json({
     message: "Repair information has been deleted",
   });
-};
+});

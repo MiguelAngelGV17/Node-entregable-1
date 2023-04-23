@@ -13,6 +13,8 @@ const validFields = (req, res, next) => {
   next();
 };
 
+// Those Fields belong to User model and actions
+
 exports.createUserValidation = [
   body("name").notEmpty().withMessage("Name field cannot be empty"),
   body("email")
@@ -23,7 +25,7 @@ exports.createUserValidation = [
   body("password")
     .notEmpty()
     .withMessage("Password field cannot be empty")
-    .isLength({ min: 8 })
+    .isLength({ min: 4 })
     .withMessage("Password must be at least 8 characters long"),
   validFields,
 ];
@@ -47,21 +49,28 @@ exports.loginUserValidation = [
   body("password")
     .notEmpty()
     .withMessage("Password field cannot be empty")
-    .isLength({ min: 8 })
+    .isLength({ min: 4 })
     .withMessage("Password must be at least 8 characters long"),
   validFields,
 ];
+
+// Those Fields belong to Repair model and actions
 
 exports.CreateRepairValidation = [
   body("date")
     .notEmpty()
     .withMessage("Date field cannot be empty")
     .isDate()
-    .withMessage("Must be a valid date"),
-  body("userID")
+    .withMessage("Must be a valid date, ex: yyyy-mm-dd"),
+  body("motorsNumber")
     .notEmpty()
-    .withMessage("UserID field cannot be empty")
+    .withMessage("motorsNumber field cannot be empty")
     .isNumeric()
-    .withMessage("UserID must be a number"),
+    .withMessage("motorsNumber must be a number type"),
+  body("description")
+    .notEmpty()
+    .withMessage("Description field cannot be empty")
+    .isString()
+    .withMessage("Description must have a content type text"),
   validFields,
 ];

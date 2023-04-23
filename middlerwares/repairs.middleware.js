@@ -1,22 +1,9 @@
 const AppError = require("../utils/appError");
+const catchAsync = require("../utils/catchAsync");
 const Repair = require("./../models/repair.model");
 const User = require("./../models/user.model");
 
-exports.validUserForRepair = async (req, res, next) => {
-  const { userID } = req.body;
-
-  const user = await User.findOne({
-    where: {
-      id: userID,
-    },
-  });
-  if (!user) {
-    return next(new AppError("UserID wasn't found on server", 404));
-  }
-  next();
-};
-
-exports.validExistRepair = async (req, res, next) => {
+exports.validExistRepair = catchAsync(async (req, res, next) => {
   const { id } = req.params;
 
   const repair = await Repair.findOne({
@@ -24,6 +11,15 @@ exports.validExistRepair = async (req, res, next) => {
       id,
       status: "pending",
     },
+    attributes: { exclude: ["date", "createdAt", "updatedAt"] },
+    include: [
+      {
+        model: User,
+        attributes: {
+          exclude: ["id", "password", "status", "createdAt", "updatedAt"],
+        },
+      },
+    ],
   });
   if (!repair) {
     next(new AppError(`Repair with id: ${id} not found`, 404));
@@ -31,6 +27,4 @@ exports.validExistRepair = async (req, res, next) => {
 
   req.repair = repair;
   next();
-};
-
-//id, date, status, userId
+});

@@ -10,18 +10,19 @@ const validation = require("../middlerwares/validations.middleware");
 
 const router = express.Router();
 
+router.use(authMiddleware.protect);
+
 router.post(
   "/",
   validation.CreateRepairValidation,
-  repairMiddleware.validUserForRepair,
+  // repairMiddleware.validUserForRepair,
   repairController.create
 );
 
-router.use(authMiddleware.protect);
-
 router.use(authMiddleware.restrictTo("employee"));
 
-router.get("/", repairController.findAll);
+router.get("/pending", repairController.findAllPending);
+router.get("/completed", repairController.findAllCompleted);
 
 router
   .route("/:id")

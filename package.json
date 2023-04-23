@@ -10,7 +10,7 @@
     "debug": "ndb server.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Miguel Angel Gonzalez Velez",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
